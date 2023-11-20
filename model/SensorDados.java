@@ -1,8 +1,23 @@
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+@Table(name = "SensorDados")
 public class SensorDados extends Sensor {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Column
     private String tipo;
+
+    @Column
     private boolean status;
+
+    @Column
     private String valor;
+
+    @Column
     private Date dataLeitura;
 
     public SensorDados(Sensor sensor, String tipo, boolean status, String valor, Date dataLeitura) {
