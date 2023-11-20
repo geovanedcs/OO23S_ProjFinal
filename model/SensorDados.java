@@ -21,7 +21,7 @@ public class SensorDados extends Sensor {
     private Date dataLeitura;
 
     public SensorDados(Sensor sensor, String tipo, boolean status, String valor, Date dataLeitura) {
-        super(sensor.getNome());
+        super(sensor.getNome(), sensor.getDataCriacao());
         this.tipo = tipo;
         this.status = status;
         this.valor = valor;
