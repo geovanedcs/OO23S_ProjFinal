@@ -1,0 +1,50 @@
+
+package dao;
+
+import java.sql.*;
+
+public class ComodoDAO {
+    private Connection connection;
+
+    public ComodoDAO() {
+        // Establish the database connection here
+        // You can use a connection pool or create a new connection
+        // Example:
+        try {
+            String url = "jdbc:mysql://localhost:3306/mydatabase";
+            String username = "root";
+            String password = "password";
+            connection = DriverManager.getConnection(url, username, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Implement CRUD methods here
+    // Example:
+    public void create(Comodo comodo) {
+        try {
+            String query = "INSERT INTO comodo (id, nome) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, comodo.getId());
+            statement.setString(2, comodo.getNome());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Implement other CRUD methods here
+    // ...
+
+    // Close the database connection
+    public void close() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
