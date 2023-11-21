@@ -1,6 +1,6 @@
 import java.util.Date;
 
-private class SensorModel {
+public class SensorModel {
 
     Sensor sensor;
     String tipo;
