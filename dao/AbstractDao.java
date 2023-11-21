@@ -1,50 +1,50 @@
-
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import java.util.List;
 
-public abstract class AbstractDao<T, PK extends Serializable> {
 
-    @PersistenceContext(unitName = "your_persistence_unit_name")
-    private EntityManager entityManager;
+public class DAO<T> {
+	private final EntityManager em;
+	private final Class<T> classe;
 
-    private final Class<T> entityClass;
+	public DAO(EntityManager em, Class<T> classe) {
+		this.em = em;
+		this.classe = classe;
+	}
 
-    @SuppressWarnings("unchecked")
-    public AbstractDao() {
-        this.entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    }
+	public T busca(Integer id) {
+		return this.em.getReference(classe, id);
+	}
 
-    protected EntityManager getEntityManager() {
-        return entityManager;
-    }
+	public List<T> lista() {
+		return em.createQuery("select a from " + classe.getName() + " a").getResultList();
+	}
 
-    public T find(PK id) {
-        return entityManager.find(entityClass, id);
-    }
+	public void adiciona(T t) {
+		this.em.getTransaction().begin();
+		this.em.persist(t);
+		this.em.flush();
+		this.em.getTransaction().commit();
+	}
+	
+	public void remove(T t) {
+		this.em.getTransaction().begin();
+		this.em.remove(t);
+		this.em.flush();
+		this.em.getTransaction().commit();
+	}
 
-    public List<T> findAll() {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<T> cq = cb.createQuery(entityClass);
-        Root<T> rootEntry = cq.from(entityClass);
-        CriteriaQuery<T> all = cq.select(rootEntry);
-        return entityManager.createQuery(all).getResultList();
-    }
+	public T atualiza(T t) {
+		this.em.getTransaction().begin();
+		t = this.em.merge(t);		
+		this.em.flush();
+		this.em.getTransaction().commit();
+		return t;
+	}
 
-    public void create(T entity) {
-        entityManager.persist(entity);
-    }
-
-    public void update(T entity) {
-        entityManager.merge(entity);
-    }
-
-    public void delete(T entity) {
-        entityManager.remove(entityManager.merge(entity));
-    }
+	public void removeQuery(T t, Integer chave) {
+		this.em.getTransaction().begin();
+		this.em.createQuery("delete from " + classe.getName() + " where codigo = " + chave).executeUpdate();
+		this.em.flush();
+		this.em.getTransaction().commit();
+	}
 }
